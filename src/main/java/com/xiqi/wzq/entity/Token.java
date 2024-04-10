@@ -18,5 +18,7 @@ public class Token {
 
     Date expires_time;
 
+    String username;
+
     public Boolean isExpires(){return new Date().before(this.expires_time);}
 }

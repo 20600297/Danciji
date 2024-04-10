@@ -30,7 +30,6 @@ public class LoginInterceptor implements HandlerInterceptor {
             // 从Redis中取出相同的token
             Token h2_token = tokenRepository.findByToken(token);
 
-
             if (!h2_token.isExpires()) {
                 // token 已经失效
                 throw new RuntimeException();
@@ -40,6 +39,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             ThreadLocalUtil.set(claims);
             // 放行
             return true;
+
         } catch (Exception e) {
             // http相应状态码为401
             response.setStatus(401);

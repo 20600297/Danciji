@@ -9,4 +9,5 @@ public interface PersonService {
 
     Result login(String username,String password);
 
+    Result updatePassword(String oldPwd, String newPwd);
 }

@@ -8,10 +8,13 @@ import com.xiqi.wzq.repo.PersonRepository;
 import com.xiqi.wzq.repo.TokenRepository;
 import com.xiqi.wzq.utils.JwtUtils;
 import com.xiqi.wzq.utils.SpringUtils;
+import com.xiqi.wzq.utils.ThreadLocalUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class PersonServiceImpl implements PersonService {
@@ -48,7 +51,7 @@ public class PersonServiceImpl implements PersonService {
             claims.put("username",username);
             String token = JwtUtils.genToken(claims,date);
 
-            tokenRepository.save(new Token(token,date));
+            tokenRepository.save(new Token(token,date,username));
 
 
             return Result.success(token);
@@ -56,4 +59,27 @@ public class PersonServiceImpl implements PersonService {
 
         return Result.error("密码错误");
     }
+
+    @Transactional
+    @Override
+    public Result updatePassword(String oldPwd, String newPwd) {
+
+        Map<String,Object> map = ThreadLocalUtil.get();
+        String username = (String) map.get("username");
+
+        Person loginUser = personRepository.findByUsername(username);
+
+        if (!loginUser.getPassword().equals(oldPwd)){
+            return Result.error("原密码填写错误");
+        }
+
+        loginUser.setPassword(newPwd);
+        personRepository.save(loginUser);
+
+        tokenRepository.deleteAllByUsername(username);
+
+        return Result.success();
+
+    }
+
 }

@@ -9,4 +9,5 @@ public interface TokenRepository extends JpaRepository<Token,String> , JpaSpecif
 
     Token findByToken(String token);
 
+    void deleteAllByUsername(String username);
 }
